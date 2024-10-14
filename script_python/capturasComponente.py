@@ -1,6 +1,5 @@
 import psutil as ps 
 import cpuinfo as cp
-import time as t
 import datetime as dt
 
 

@@ -1,6 +1,5 @@
 import banco as bd
 import capturasComponente as cp
-import time as t
 
 # Capturando dados de média de uso da CPU
 def capturandoCpu(idMaquina):   
