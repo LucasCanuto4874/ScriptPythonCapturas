@@ -8,7 +8,7 @@ import os
 
 load_dotenv()
 
-caminho = "./script_python/.env"
+caminho = ".env"
 identificadorMaquina = "CODIGO_MAQUINA"
 
 def main():
