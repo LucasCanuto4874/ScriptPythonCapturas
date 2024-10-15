@@ -112,7 +112,7 @@ def capturaDadosComponentes(idMaquina):
 
         print("Memória RAM Usada: ", memoria[0])
         print("Memória RAM Livre: ", memoria[1])
-        print("Média de Uso da CPU: ", cpu[0])
+        print("Uso da CPU: ", cpu[0])
         print("Frequencia do Processador: ", cpu[1])
         # print("Perda de Pacotes: ", perdaPacote)
         

@@ -8,18 +8,9 @@ def nomeCPU():
     nome = cp.get_cpu_info()
     return nome["brand_raw"]
 
-def mediaUsoCpu():
-    tempoCpu = ps.cpu_times(percpu=True)
-    i = 0
-    tempoAtivo = 0
-    tempoTotal = 0
-
-    while i < len(tempoCpu):
-        tempoAtivo += tempoCpu[i].user + tempoCpu[i].system
-        tempoTotal += sum(tempoCpu[i])
-
-        i += 1
-    return f"{(tempoAtivo / tempoTotal) * 100:.2f}"
+def UsoCpu():
+    uso = ps.cpu_percent(interval=0.1)
+    return uso
 
 def freqCpu():
     frequencia = ps.cpu_freq().current

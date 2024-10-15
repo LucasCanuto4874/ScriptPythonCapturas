@@ -4,13 +4,13 @@ import capturasComponente as cp
 # Capturando dados de média de uso da CPU
 def capturandoCpu(idMaquina):   
     idUltimaCpu = bd.select("SELECT id FROM ultimoComponente WHERE tipo = 'Processador'")
-    mediaUsoCpu = cp.mediaUsoCpu()
+    usoCpu = cp.UsoCpu()
     frequencia = cp.freqCpu()
     
-    bd.insert(f"INSERT INTO log (valor, dataHora, fkComponente, fkDispositivo, descricao) VALUES ('{mediaUsoCpu}', current_timestamp(), {idUltimaCpu[0][0]}, {idMaquina}, 'Média de Uso da CPU' );")
+    bd.insert(f"INSERT INTO log (valor, dataHora, fkComponente, fkDispositivo, descricao) VALUES ('{usoCpu}', current_timestamp(), {idUltimaCpu[0][0]}, {idMaquina}, 'Uso da CPU' );")
     bd.insert(f"INSERT INTO log (valor, dataHora, fkComponente, fkDispositivo, descricao) VALUES ('{frequencia}', current_timestamp(), {idUltimaCpu[0][0]}, {idMaquina}, 'Frequencia do processador' );")
     
-    return mediaUsoCpu, frequencia
+    return usoCpu, frequencia
     
 # Capturando dados da memória RAM usada e Livre
 def capturaMemoria(idMaquina):
