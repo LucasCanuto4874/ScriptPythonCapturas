@@ -116,7 +116,7 @@ def capturaDadosComponentes(idMaquina):
         print("Frequencia do Processador: ", cpu[1])
         # print("Perda de Pacotes: ", perdaPacote)
         
-        t.sleep(1)
+        t.sleep(0.5)
     
 def verificaoLogin(email, senha):
     listaVerificacao = [email, senha]  
