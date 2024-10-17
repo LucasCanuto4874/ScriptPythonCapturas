@@ -2,4 +2,3 @@ python-dotenv
 mysql-connector-python
 psutil
 py-cpuinfo
-os
