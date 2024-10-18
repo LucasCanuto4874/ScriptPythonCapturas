@@ -108,13 +108,13 @@ def capturaDadosComponentes(idMaquina):
     # Capturando dados constante da memória RAM, CPU e Perda de Pacotes
         memoria = cd.capturaMemoria(idMaquina)
         cpu = cd.capturandoCpu(idMaquina)
-        # perdaPacote = cd.capturaPerdaDePacotes(idMaquina)
+        perdaPacote = cd.capturaPerdaDePacotes(idMaquina)
 
         print("Memória RAM Usada: ", memoria[0])
         print("Memória RAM Livre: ", memoria[1])
         print("Uso da CPU: ", cpu[0])
         print("Frequencia do Processador: ", cpu[1])
-        # print("Perda de Pacotes: ", perdaPacote)
+        print("Perda de Pacotes: ", perdaPacote)
         
         t.sleep(0.5)
     
