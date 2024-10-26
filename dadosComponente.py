@@ -7,8 +7,8 @@ def capturandoCpu(idMaquina):
     usoCpu = cp.UsoCpu()
     frequencia = cp.freqCpu()
     
-    bd.insert(f"INSERT INTO log (valor, dataHora, fkComponente, fkDispositivo, descricao) VALUES ('{usoCpu}', current_timestamp(), {idUltimaCpu[0][0]}, {idMaquina}, 'Uso da CPU' );")
-    bd.insert(f"INSERT INTO log (valor, dataHora, fkComponente, fkDispositivo, descricao) VALUES ('{frequencia}', current_timestamp(), {idUltimaCpu[0][0]}, {idMaquina}, 'Frequencia do processador' );")
+    bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{usoCpu}', '%', current_timestamp(), 'Uso da CPU', {idUltimaCpu[0][0]}, {idMaquina});")
+    bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{frequencia}', 'Ghz', current_timestamp(), 'Frequencia do processador', {idUltimaCpu[0][0]}, {idMaquina});")
     
     return usoCpu, frequencia
     
@@ -18,22 +18,29 @@ def capturaMemoria(idMaquina):
     memoriaUsada = cp.memoriaRamUsada()
     memoriaLivre = cp.memoriaRamLivre()
     
-    bd.insert(f"INSERT INTO log (valor, dataHora, fkComponente, fkDispositivo, descricao) VALUES ('{memoriaUsada}', current_timestamp(), {idUltimaMemoria[0][0]}, {idMaquina}, 'Uso de Memória RAM');")
-    bd.insert(f"INSERT INTO log (valor, dataHora, fkComponente, fkDispositivo, descricao) VALUES ('{memoriaLivre}', current_timestamp(), {idUltimaMemoria[0][0]}, {idMaquina}, 'Memória RAM Livre');")
+    bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{memoriaUsada}', 'GB', current_timestamp(), 'Uso de Memória RAM', {idUltimaMemoria[0][0]}, {idMaquina});")
+    bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{memoriaLivre}', 'GB', current_timestamp(), 'Memória RAM Livre', {idUltimaMemoria[0][0]}, {idMaquina});")
     
-    return memoriaUsada, memoriaLivre
+    return memoriaUsada, memoriaLivre, 
+
+def capturandoMemoriaRamTotal(idMaquina):
+    idUltimaMemoria = bd.select("SELECT id FROM ultimoComponente WHERE tipo = 'Memória'")
+    memoriaRamTotal = cp.memoriaRamTotal()
+    bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{memoriaRamTotal}', 'GB', current_timestamp(), 'Memória RAM Total', {idUltimaMemoria[0][0]}, {idMaquina});")
+    
+    return memoriaRamTotal
         
 # Capturando dados de disco usado e livre 
 def capturaArmazenamento(idMaquina):
     idUltimoArmazenamento = bd.select("SELECT id FROM ultimoComponente WHERE tipo = 'Armazenamento'")
     
-    bd.insert(f"INSERT INTO log (valor, dataHora, fkComponente, fkDispositivo, descricao) VALUES ('{cp.discoUsado()}', current_timestamp(), {idUltimoArmazenamento[0][0]}, {idMaquina}, 'Uso de Armazenamento');")
-    bd.insert(f"INSERT INTO log (valor, dataHora, fkComponente, fkDispositivo, descricao) VALUES ('{cp.discoLivre()}', current_timestamp(), {idUltimoArmazenamento[0][0]}, {idMaquina}, 'Armazenamento Livre');")
+    bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{cp.discoUsado()}', 'GB', current_timestamp(), 'Uso de Armazenamento', {idUltimoArmazenamento[0][0]}, {idMaquina});")
+    bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{cp.discoLivre()}', 'GB', current_timestamp(), 'Armazenamento Livre', {idUltimoArmazenamento[0][0]}, {idMaquina});")
     
 # Capturando dados de perda de pacote na rede
 def capturaPerdaDePacotes(idMaquina):
     idUltimaPlacaRede = bd.select("SELECT id FROM ultimoComponente WHERE tipo = 'Placa de Rede'")
     pacotesPerdidos = cp.pacotesPerdidos()
-    bd.insert(f"INSERT INTO log (valor, dataHora, fkComponente, fkDispositivo, descricao)  VALUES ('{pacotesPerdidos}', current_timestamp(), {idUltimaPlacaRede[0][0]}, {idMaquina}, 'Perda de Pacotes');")
+    bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo)  VALUES ('{pacotesPerdidos}', 'MB', current_timestamdp(), 'Perda de Pacotes', {idUltimaPlacaRede[0][0]}, {idMaquina});")
     
     return pacotesPerdidos

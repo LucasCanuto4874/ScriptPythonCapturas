@@ -69,6 +69,8 @@ def cadastrarMaquina(fkEmpresa):
         # Setando o ID da máquina no arquivo .env (Simulando Session Storage)
         set_key(caminho, identificadorMaquina, str(idUltimaMaquina[0][0]))
         cadastrarComponentes()
+    else: 
+        print("Erro ao cadastrar a máquina, tente novamente!")
     
     
 def cadastrarComponentes():
@@ -78,13 +80,13 @@ def cadastrarComponentes():
     print(f"Cadastrando componentes da máquina {nomeMaquina}...")
     
     print("Cadastrando Processador...")
-    bd.insert(f"INSERT INTO componentes (nome, tipo, qtdNucleos, fkDispositivo) VALUES ('{cp.nomeCPU()}', 'Processador', {cp.qtdNucleos()}, {idMaquina})")
+    bd.insert(f"INSERT INTO componente (nome, tipo, fkDispositivo) VALUES ('{cp.nomeCPU()}', 'Processador', {idMaquina})")
     
     print("Cadastrando memória ram...")
-    bd.insert(f"INSERT INTO componentes (nome, tipo, memTotal, fkDispositivo) VALUES ('Memória Ram', 'Memória', {cp.memoriaRamTotal()}, {idMaquina})")
+    bd.insert(f"INSERT INTO componente (nome, tipo, fkDispositivo) VALUES ('Memória Ram', 'Memória', {idMaquina})")
     
     print("Cadastrando armazenamento... ")
-    bd.insert(f"INSERT INTO componentes (nome, tipo, armazTotal, fkDispositivo) VALUES ('Memória Massa', 'Armazenamento', {cp.totalDisco()}, {idMaquina})")
+    bd.insert(f"INSERT INTO componente (nome, tipo, fkDispositivo) VALUES ('Memória Massa', 'Armazenamento', {idMaquina})")
     
     print("Componentes registrado com sucesso!, atualize a página da sua dashboard para listar a nova máquina cadastrada")
     
@@ -101,6 +103,9 @@ def capturaDadosComponentes(idMaquina):
     # Capturando armazenamento
     print("Iniciando Captura de dados do armazenamento...")
     cd.capturaArmazenamento(idMaquina)
+    
+    print("Capturando a memória RAM total...")
+    cd.capturaMemoria(idMaquina)
     
     print("Iniciando Captura de dados constante da Memória RAM, CPU e Perda de Pacotes...")
     
