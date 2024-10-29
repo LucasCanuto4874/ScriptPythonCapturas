@@ -101,11 +101,21 @@ def capturaDadosComponentes(idMaquina):
     
     # Parte da captura de dados dos componentes
     # Capturando armazenamento
+    while(True):    
+        print("Buscando a placa de rede do kotlin...")
+        ultimoIdPlacaRede = bd.select(f"SELECT id FROM componente WHERE fkDispositivo = {idMaquina} AND tipo = 'Placa de Rede'")
+        
+        if(len(ultimoIdPlacaRede) <= 0):
+            print("Execute o kotlin para capturar a placa de rede")
+        else:
+            break
+        t.sleep(2)
+    
     print("Iniciando Captura de dados do armazenamento...")
     cd.capturaArmazenamento(idMaquina)
     
     print("Capturando a memória RAM total...")
-    cd.capturaMemoria(idMaquina)
+    cd.capturandoMemoriaRamTotal(idMaquina)
     
     print("Iniciando Captura de dados constante da Memória RAM, CPU e Perda de Pacotes...")
     

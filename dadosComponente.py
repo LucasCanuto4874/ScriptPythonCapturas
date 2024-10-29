@@ -36,6 +36,7 @@ def capturaArmazenamento(idMaquina):
     
     bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{cp.discoUsado()}', 'GB', current_timestamp(), 'Uso de Armazenamento', {idUltimoArmazenamento[0][0]}, {idMaquina});")
     bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{cp.discoLivre()}', 'GB', current_timestamp(), 'Armazenamento Livre', {idUltimoArmazenamento[0][0]}, {idMaquina});")
+    bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{cp.totalDisco()}', 'GB', current_timestamp(), 'Armazenamento Total', {idUltimoArmazenamento[0][0]}, {idMaquina});")
     
 # Capturando dados de perda de pacote na rede
 def capturaPerdaDePacotes(idMaquina):
