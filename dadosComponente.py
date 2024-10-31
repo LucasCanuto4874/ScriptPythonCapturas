@@ -2,26 +2,44 @@ import banco as bd
 import capturasComponente as cp
 
 # Capturando dados de média de uso da CPU
-def capturandoCpu(idMaquina):   
+def capturandoUsoCpu(idMaquina, alerta):   
     idUltimaCpu = bd.select("SELECT id FROM ultimoComponente WHERE tipo = 'Processador'")
     usoCpu = cp.UsoCpu()
+    
+    if(alerta == 1):
+        bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{usoCpu}', '%', current_timestamp(), 'Uso da CPU', {idUltimaCpu[0][0]}, {idMaquina});")
+    else:
+        bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{usoCpu}', '%', current_timestamp(), 'Uso da CPU', {idUltimaCpu[0][0]}, {idMaquina});")
+    
+    return usoCpu
+
+def capturandoFrequenciaCpu(idMaquina):
+    idUltimaCpu = bd.select("SELECT id FROM ultimoComponente WHERE tipo = 'Processador'")
     frequencia = cp.freqCpu()
     
-    bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{usoCpu}', '%', current_timestamp(), 'Uso da CPU', {idUltimaCpu[0][0]}, {idMaquina});")
     bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{frequencia}', 'Ghz', current_timestamp(), 'Frequencia do processador', {idUltimaCpu[0][0]}, {idMaquina});")
     
-    return usoCpu, frequencia
+    return frequencia
     
 # Capturando dados da memória RAM usada e Livre
-def capturaMemoria(idMaquina):
+def capturaMemoriaUsada(idMaquina, alerta):
     idUltimaMemoria = bd.select("SELECT id FROM ultimoComponente WHERE tipo = 'Memória'")   
     memoriaUsada = cp.memoriaRamUsada()
+    
+    if(alerta == 1):
+        bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{memoriaUsada}', 'GB', current_timestamp(), 'Uso de Memória RAM', {idUltimaMemoria[0][0]}, {idMaquina});")
+    else:
+        bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{memoriaUsada}', 'GB', current_timestamp(), 'Alerta: Uso Alto de Memória RAM', {idUltimaMemoria[0][0]}, {idMaquina});")
+    
+    return memoriaUsada, 
+
+def capturaMemoriaLivre(idMaquina):
+    idUltimaMemoria = bd.select("SELECT id FROM ultimoComponente WHERE tipo = 'Memória'")   
     memoriaLivre = cp.memoriaRamLivre()
     
-    bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{memoriaUsada}', 'GB', current_timestamp(), 'Uso de Memória RAM', {idUltimaMemoria[0][0]}, {idMaquina});")
     bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{memoriaLivre}', 'GB', current_timestamp(), 'Memória RAM Livre', {idUltimaMemoria[0][0]}, {idMaquina});")
     
-    return memoriaUsada, memoriaLivre, 
+    return memoriaLivre
 
 def capturandoMemoriaRamTotal(idMaquina):
     idUltimaMemoria = bd.select("SELECT id FROM ultimoComponente WHERE tipo = 'Memória'")
@@ -31,12 +49,18 @@ def capturandoMemoriaRamTotal(idMaquina):
     return memoriaRamTotal
         
 # Capturando dados de disco usado e livre 
-def capturaArmazenamento(idMaquina):
+def capturaArmazenamentoUsado(idMaquina):
     idUltimoArmazenamento = bd.select("SELECT id FROM ultimoComponente WHERE tipo = 'Armazenamento'")
-    
     bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{cp.discoUsado()}', 'GB', current_timestamp(), 'Uso de Armazenamento', {idUltimoArmazenamento[0][0]}, {idMaquina});")
+
+def capturaArmazenamentoLivre(idMaquina):
+    idUltimoArmazenamento = bd.select("SELECT id FROM ultimoComponente WHERE tipo = 'Armazenamento'")
     bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{cp.discoLivre()}', 'GB', current_timestamp(), 'Armazenamento Livre', {idUltimoArmazenamento[0][0]}, {idMaquina});")
+
+def capturaArmazenamentoTotal(idMaquina):
+    idUltimoArmazenamento = bd.select("SELECT id FROM ultimoComponente WHERE tipo = 'Armazenamento'")
     bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo) VALUES ('{cp.totalDisco()}', 'GB', current_timestamp(), 'Armazenamento Total', {idUltimoArmazenamento[0][0]}, {idMaquina});")
+    
     
 # Capturando dados de perda de pacote na rede
 def capturaPerdaDePacotes(idMaquina):
