@@ -42,6 +42,6 @@ def capturaArmazenamento(idMaquina):
 def capturaPerdaDePacotes(idMaquina):
     idUltimaPlacaRede = bd.select("SELECT id FROM ultimoComponente WHERE tipo = 'Placa de Rede'")
     pacotesPerdidos = cp.pacotesPerdidos()
-    bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo)  VALUES ('{pacotesPerdidos}', 'MB', current_timestamdp(), 'Perda de Pacotes', {idUltimaPlacaRede[0][0]}, {idMaquina});")
+    bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, fkComponente, fkDispositivo)  VALUES ('{pacotesPerdidos}', 'MB', current_timestamp(), 'Perda de Pacotes', {idUltimaPlacaRede[0][0]}, {idMaquina});")
     
     return pacotesPerdidos
