@@ -159,59 +159,62 @@ def capturaDadosComponentes(idMaquina, idUsuario):
     memoriaRamTotal = cp.memoriaRamTotal()
     cd.capturandoMemoriaRamTotal(memoriaRamTotal, idMaquina, alerta)
     
-    # Capturando a memória RAM usada
-    memoriaUsada = float(cp.memoriaRamUsada())
-    
-    for ramAlerta in alertasUsuario:
-        if ramAlerta[3] == "Memória":
-            if memoriaUsada < int(ramAlerta[1]) or memoriaUsada > int(ramAlerta[2]):
-                print(f"Memória RAM Capturada {memoriaUsada} GB")
-                print("Alerta de alto uso de memória RAM!!!!!")
-                alerta = 1
-                cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
-            else:
-                alerta = 0
-                print(f"Memória RAM Capturada {memoriaUsada} GB")
-                cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
-                
-    # ÁREA DE CAPTURA DE CPU
-    # Capturando o uso da CPU
-    usoCpu = float(cp.UsoCpu())
-    
-    for cpuAlerta in alertasUsuario:
-        if cpuAlerta[3] == "Processador":
-            if usoCpu < int(cpuAlerta[1]) or usoCpu > int(cpuAlerta[2]):
-                print(f"Uso da CPU Capturado {usoCpu} %")
-                print("Alerta de alto uso de CPU!!!!!")
-                alerta = 1
-                cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
-            else:
-                alerta = 0
-                print(f"Uso da CPU Capturado {usoCpu} %")
-                cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
-                
-                
-    # Capturando frequencia da cpu 
-    alerta = 0
-    frequencia = cp.freqCpu()
-    cd.capturandoFrequenciaCpu(frequencia, idMaquina, alerta)
-    
-    
-    # Área de perda de pacotes
-    # Capturando a perda de pacotes
-    pacotesPerdidos = float(cp.pacotesPerdidos())
-    
-    for pacotesAlerta in alertasUsuario:
-        if pacotesAlerta[3] == "Placa de Rede":
-            if pacotesPerdidos < int(pacotesAlerta[1]) or pacotesPerdidos > int(pacotesAlerta[2]):
-                print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
-                print("Alerta de alta perda de pacotes!!!!!")
-                alerta = 1
-                cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta)
-            else:
-                alerta = 0
-                print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
-                cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta)
+    # Capturando os dados constatemente
+    while True:
+        # Capturando a memória RAM usada
+        memoriaUsada = float(cp.memoriaRamUsada())
+        
+        for ramAlerta in alertasUsuario:
+            if ramAlerta[3] == "Memória":
+                if memoriaUsada < int(ramAlerta[1]) or memoriaUsada > int(ramAlerta[2]):
+                    print(f"Memória RAM Capturada {memoriaUsada} GB")
+                    print("Alerta de alto uso de memória RAM!!!!!")
+                    alerta = 1
+                    cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
+                else:
+                    alerta = 0
+                    print(f"Memória RAM Capturada {memoriaUsada} GB")
+                    cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
+                    
+        # ÁREA DE CAPTURA DE CPU
+        # Capturando o uso da CPU
+        usoCpu = float(cp.UsoCpu())
+        
+        for cpuAlerta in alertasUsuario:
+            if cpuAlerta[3] == "Processador":
+                if usoCpu < int(cpuAlerta[1]) or usoCpu > int(cpuAlerta[2]):
+                    print(f"Uso da CPU Capturado {usoCpu} %")
+                    print("Alerta de alto uso de CPU!!!!!")
+                    alerta = 1
+                    cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
+                else:
+                    alerta = 0
+                    print(f"Uso da CPU Capturado {usoCpu} %")
+                    cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
+                    
+                    
+        # Capturando frequencia da cpu 
+        alerta = 0
+        frequencia = cp.freqCpu()
+        cd.capturandoFrequenciaCpu(frequencia, idMaquina, alerta)
+        
+        
+        # Área de perda de pacotes
+        # Capturando a perda de pacotes
+        pacotesPerdidos = float(cp.pacotesPerdidos())
+        
+        for pacotesAlerta in alertasUsuario:
+            if pacotesAlerta[3] == "Placa de Rede":
+                if pacotesPerdidos < int(pacotesAlerta[1]) or pacotesPerdidos > int(pacotesAlerta[2]):
+                    print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
+                    print("Alerta de alta perda de pacotes!!!!!")
+                    alerta = 1
+                    cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta)
+                else:
+                    alerta = 0
+                    print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
+                    cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta)
+        t.sleep(1)
     
 def verificaoLogin(email, senha):
     listaVerificacao = [email, senha]  
