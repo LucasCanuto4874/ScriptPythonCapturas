@@ -131,94 +131,87 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                 """))
             i += 1
             
-        print("Começando a captura dos dados...")
+    # ÁREA DE CAPTURA DE ARMAZENAMENTO
+    # Capturando o armazenamento total 
+    alerta = 0
+    discoTotal = cp.totalDisco()
+    cd.capturaArmazenamentoTotal(discoTotal, idMaquina, alerta)
     
-        # Fazendo a captura de armazenamento e inserindo no banco de dados
-        i = 0 
-        alerta = 0
-        print("Iniciando Captura de dados do armazenamento...")
-        while i < len(alertasUsuario):
-            
-            discoUsado = int(cp.discoUsado())
-            discoTotal = int(cp.totalDisco())
-            
-            cd.capturaArmazenamentoTotal(discoTotal, idMaquina)
-            
-            if(alertasUsuario[i][3] == "Armazenamento"):
-                if(discoUsado < alertasUsuario[i][1]):
-                    cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
-            else:
+    # Capturando o armazenamento usado
+    discoUsado = float(cp.discoUsado())
+    
+    for armazenamentoAlerta in alertasUsuario:
+        if armazenamentoAlerta[3] == "Armazenamento":
+            if discoUsado < int(armazenamentoAlerta[1]) or discoUsado > int(armazenamentoAlerta[2]):
+                print(f"Armazenamento Capturado {discoUsado} GB")
+                print("Alerta de alto uso de armazenamento!!!!!")
+                alerta = 1
                 cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
-            i += 1
-        # Capturando a memória RAM total
-        print("Capturando a memória RAM total...")
-        cd.capturandoMemoriaRamTotal(idMaquina)
-        
-        print("Iniciando Captura de dados constante da Memória RAM, CPU e Perda de Pacotes...")
-        
-        while True:
-        # Capturando dados constante da memória RAM, CPU e Perda de Pacotes
-            alerta = 0
-            i = 0
-            memoriaUsada = float(cp.memoriaRamUsada())
-            usoCpu = float(cp.UsoCpu())
-            pacotesPerdido = float(cp.pacotesPerdidos())
-            
-            if(len(alertasUsuario) > 0):
-                
-                while i < len(alertasUsuario):
-                    while True:
-                        if(alertasUsuario[i][3] == "Memória"):
-                            if(memoriaUsada <= int(alertasUsuario[i][1]) or memoriaUsada >= int(alertasUsuario[i][2])):
-                                print("Alerta disparado de Memória RAM")
-                                print("Memória RAM Usada: ", memoriaUsada)
-                                cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
-                            else:
-                                print("Memória RAM Usada: ", memoriaUsada)
-                                alerta = 1
-                                cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
-                        else:
-                            print("Memória RAM Usada: ", memoriaUsada)
-                            cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
-                        
-                        # Capturando uso da cpu
-                        if(alertasUsuario[i][3] == "Processador"):
-                            if(usoCpu <= int(alertasUsuario[i][1]) or usoCpu >= int(alertasUsuario[i][2])):
-                                print("Alerta disparado de CPU")
-                                print("Uso da CPU: ", usoCpu)
-                                cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
-                            else:
-                                print("Uso da CPU: ", usoCpu)
-                                alerta = 1
-                                cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
-                        else:
-                            print("Uso da CPU: ", usoCpu)
-                            cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
-                        
-                        
-                        # Capturando perda de pacotes 
-                        if(alertasUsuario[i][3] == "Placa de Rede"):
-                            if(pacotesPerdido <= int(alertasUsuario[i][1]) or pacotesPerdido >= int(alertasUsuario[i][2])):
-                                print("Alerta disparado de Perda de Pacotes")
-                                print("Perda de Pacotes: ", pacotesPerdido)
-                                cd.capturaPerdaDePacotes(pacotesPerdido, idMaquina, alerta)
-                            else:
-                                print("Perda de Pacotes: ", pacotesPerdido)
-                                alerta = 1
-                                cd.capturaPerdaDePacotes(pacotesPerdido, idMaquina, alerta)
-                        else:
-                            print("Perda de Pacotes: ", pacotesPerdido)
-                            cd.capturaPerdaDePacotes(pacotesPerdido, idMaquina, alerta)
-                            
-                        t.sleep(5)    
-                    i += 1
             else:
-                print("Memória RAM Usada: ", memoriaUsada)
-                print("Uso da CPU: ", usoCpu)
-                print("Perda de Pacotes: ", pacotesPerdido)
-                cd.inserirMemoriaUsada(memoriaUsada, idMaquina)
-            
-            t.sleep(5)
+                print(f"Armazenamento Capturado {discoUsado} GB")
+                alerta = 0
+                cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
+        # Como verificar se ele não tiver um cadastro de alerta para o armazenamento mesmo buscando todos os alertas cadastrado?
+        
+    # ÁREA DE CAPTURA DE MEMÓRIA RAM
+    # Capturando a memória RAM total
+    alerta = 0
+    memoriaRamTotal = cp.memoriaRamTotal()
+    cd.capturandoMemoriaRamTotal(memoriaRamTotal, idMaquina, alerta)
+    
+    # Capturando a memória RAM usada
+    memoriaUsada = float(cp.memoriaRamUsada())
+    
+    for ramAlerta in alertasUsuario:
+        if ramAlerta[3] == "Memória":
+            if memoriaUsada < int(ramAlerta[1]) or memoriaUsada > int(ramAlerta[2]):
+                print(f"Memória RAM Capturada {memoriaUsada} GB")
+                print("Alerta de alto uso de memória RAM!!!!!")
+                alerta = 1
+                cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
+            else:
+                alerta = 0
+                print(f"Memória RAM Capturada {memoriaUsada} GB")
+                cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
+                
+    # ÁREA DE CAPTURA DE CPU
+    # Capturando o uso da CPU
+    usoCpu = float(cp.UsoCpu())
+    
+    for cpuAlerta in alertasUsuario:
+        if cpuAlerta[3] == "Processador":
+            if usoCpu < int(cpuAlerta[1]) or usoCpu > int(cpuAlerta[2]):
+                print(f"Uso da CPU Capturado {usoCpu} %")
+                print("Alerta de alto uso de CPU!!!!!")
+                alerta = 1
+                cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
+            else:
+                alerta = 0
+                print(f"Uso da CPU Capturado {usoCpu} %")
+                cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
+                
+                
+    # Capturando frequencia da cpu 
+    alerta = 0
+    frequencia = cp.freqCpu()
+    cd.capturandoFrequenciaCpu(frequencia, idMaquina, alerta)
+    
+    
+    # Área de perda de pacotes
+    # Capturando a perda de pacotes
+    pacotesPerdidos = float(cp.pacotesPerdidos())
+    
+    for pacotesAlerta in alertasUsuario:
+        if pacotesAlerta[3] == "Placa de Rede":
+            if pacotesPerdidos < int(pacotesAlerta[1]) or pacotesPerdidos > int(pacotesAlerta[2]):
+                print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
+                print("Alerta de alta perda de pacotes!!!!!")
+                alerta = 1
+                cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta)
+            else:
+                alerta = 0
+                print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
+                cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta)
     
 def verificaoLogin(email, senha):
     listaVerificacao = [email, senha]  
