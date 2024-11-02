@@ -116,9 +116,43 @@ def capturaDadosComponentes(idMaquina, idUsuario):
     # Parte da procura dos alertas criado pelo usuário
     fkDispositivo = os.getenv('CODIGO_MAQUINA')
     alertasUsuario = bd.select(f"SELECT * FROM alertaUsuario WHERE fkUsuario = {idUsuario} AND fkDispositivo = {fkDispositivo};")
-
-    if(len(alertasUsuario) <= 0):
-        print("Cadastre um alerta na sessão 'Alertas Personalizados'")
+    
+    if not alertasUsuario:
+        print("Nenhum alerta encontrado para o usuário")
+        print("Iniciando a captura de dados dos componentes sem alertas cadastrados...")
+        
+        alerta = 0
+        discoTotal = cp.totalDisco()
+        cd.capturaArmazenamentoTotal(discoTotal, idMaquina, alerta)
+        print(f"Armazenamento Total Capturado {discoTotal} GB")
+        
+        discoUsado = float(cp.discoUsado())
+        cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
+        print(f"Armazenamento Usado Capturado {discoUsado} GB")
+        
+        memoriaRamTotal = cp.memoriaRamTotal()
+        cd.capturandoMemoriaRamTotal(memoriaRamTotal, idMaquina, alerta)
+        print(f"Memória RAM Total Capturada {memoriaRamTotal} GB")
+        
+        while True: 
+            memoriaUsada = float(cp.memoriaRamUsada())
+            cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
+            print(f"Memória RAM Usada Capturada {memoriaUsada} GB")
+                
+            usoCpu = float(cp.UsoCpu())
+            cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
+            print(f"Uso da CPU Capturado {usoCpu} %")
+            
+            frequencia = cp.freqCpu()
+            cd.capturandoFrequenciaCpu(frequencia, idMaquina, alerta)
+            print(f"Frequência da CPU Capturada {frequencia} MHz")
+            
+            pacotesPerdidos = float(cp.pacotesPerdidos())
+            cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta)
+            print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
+            t.sleep(1)
+        
+        
     else:
         # Listando os alertas encontrados do usuario
         i = 0
