@@ -117,65 +117,32 @@ def capturaDadosComponentes(idMaquina, idUsuario):
     fkDispositivo = os.getenv('CODIGO_MAQUINA')
     alertasUsuario = bd.select(f"SELECT * FROM alertaUsuario WHERE fkUsuario = {idUsuario} AND fkDispositivo = {fkDispositivo};")
     
-    if not alertasUsuario:
-        print("Nenhum alerta encontrado para o usuário")
-        print("Iniciando a captura de dados dos componentes sem alertas cadastrados...")
-        
-        alerta = 0
-        discoTotal = cp.totalDisco()
-        cd.capturaArmazenamentoTotal(discoTotal, idMaquina, alerta)
-        print(f"Armazenamento Total Capturado {discoTotal} GB")
-        
-        discoUsado = float(cp.discoUsado())
-        cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
-        print(f"Armazenamento Usado Capturado {discoUsado} GB")
-        
-        memoriaRamTotal = cp.memoriaRamTotal()
-        cd.capturandoMemoriaRamTotal(memoriaRamTotal, idMaquina, alerta)
-        print(f"Memória RAM Total Capturada {memoriaRamTotal} GB")
-        
-        while True: 
-            memoriaUsada = float(cp.memoriaRamUsada())
-            cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
-            print(f"Memória RAM Usada Capturada {memoriaUsada} GB")
-                
-            usoCpu = float(cp.UsoCpu())
-            cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
-            print(f"Uso da CPU Capturado {usoCpu} %")
-            
-            frequencia = cp.freqCpu()
-            cd.capturandoFrequenciaCpu(frequencia, idMaquina, alerta)
-            print(f"Frequência da CPU Capturada {frequencia} MHz")
-            
-            pacotesPerdidos = float(cp.pacotesPerdidos())
-            cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta)
-            print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
-            t.sleep(1)
-        
-        
-    else:
-        # Listando os alertas encontrados do usuario
-        i = 0
-        while i < len(alertasUsuario):
-            print(dedent(f"""\
+    # Listando os alertas encontrados do usuario
+    i = 0
+    while i < len(alertasUsuario):
+        print(dedent(f"""\
                     Alertas encontrados da máquina {alertasUsuario[i][0]}:
                     Mínimo do Intervalo: {alertasUsuario[i][1]},
                     Máximo do Intervalo: {alertasUsuario[i][2]},
                     Tipo do Componente: {alertasUsuario[i][3]},
+                    Tipo do Alerta: {alertasUsuario[i][4]}
                 """))
-            i += 1
+        i += 1
             
-    # ÁREA DE CAPTURA DE ARMAZENAMENTO
-    # Capturando o armazenamento total 
+    # # ÁREA DE CAPTURA DE ARMAZENAMENTO
+    # # Capturando o armazenamento total 
     alerta = 0
     discoTotal = cp.totalDisco()
     cd.capturaArmazenamentoTotal(discoTotal, idMaquina, alerta)
     
+    
+    
+    
     # Capturando o armazenamento usado
     discoUsado = float(cp.discoUsado())
-    
+    discoUsadoMaximo = 500
     for armazenamentoAlerta in alertasUsuario:
-        if armazenamentoAlerta[3] == "Armazenamento":
+        if armazenamentoAlerta[3] == "Armazenamento" and armazenamentoAlerta[4] == "Uso Armazenamento(GB)":
             if discoUsado < int(armazenamentoAlerta[1]) or discoUsado > int(armazenamentoAlerta[2]):
                 print(f"Armazenamento Capturado {discoUsado} GB")
                 print("Alerta de alto uso de armazenamento!!!!!")
@@ -185,7 +152,20 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                 print(f"Armazenamento Capturado {discoUsado} GB")
                 alerta = 0
                 cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
-        # Como verificar se ele não tiver um cadastro de alerta para o armazenamento mesmo buscando todos os alertas cadastrado?
+        # Caso não tenha nehum alerta cadastrado ele sai do loop e começa a usar os alertas "Seguros"
+        break
+    if discoUsado > discoUsadoMaximo:
+        print(f"Armazenamento Capturado {discoUsado} GB")
+        print("Alerta de alto uso de armazenamento!!!!!")
+        alerta = 1
+        cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
+    else: 
+        print(f"Armazenamento Capturado {discoUsado} GB")
+        alerta = 0
+        cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
+        
+        
+        
         
     # ÁREA DE CAPTURA DE MEMÓRIA RAM
     # Capturando a memória RAM total
@@ -197,9 +177,11 @@ def capturaDadosComponentes(idMaquina, idUsuario):
     while True:
         # Capturando a memória RAM usada
         memoriaUsada = float(cp.memoriaRamUsada())
+        ramUsadaMinima = 1
+        ramUsadaMaxima = 7
         
         for ramAlerta in alertasUsuario:
-            if ramAlerta[3] == "Memória":
+            if ramAlerta[3] == "Memória" and ramAlerta[4] == "Uso Memória Ram (GB)":
                 if memoriaUsada < int(ramAlerta[1]) or memoriaUsada > int(ramAlerta[2]):
                     print(f"Memória RAM Capturada {memoriaUsada} GB")
                     print("Alerta de alto uso de memória RAM!!!!!")
@@ -209,13 +191,31 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                     alerta = 0
                     print(f"Memória RAM Capturada {memoriaUsada} GB")
                     cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
+            # Caso não tenha nehum alerta cadastrado ele sai do loop e começa a usar os alertas "Seguros"
+            break
+        
+        if memoriaUsada < ramUsadaMinima or memoriaUsada > ramUsadaMaxima:
+            print(f"Memória RAM Capturada {memoriaUsada} GB")
+            print("Alerta de alto uso de memória RAM!!!!!")
+            alerta = 1
+            cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
+        else:
+            alerta = 0
+            print(f"Memória RAM Capturada {memoriaUsada} GB")
+            cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
+        
+                    
+                    
+                    
                     
         # ÁREA DE CAPTURA DE CPU
         # Capturando o uso da CPU
         usoCpu = float(cp.UsoCpu())
+        usoCpuMinimo = 10
+        usoCpuMaximo = 90
         
         for cpuAlerta in alertasUsuario:
-            if cpuAlerta[3] == "Processador":
+            if cpuAlerta[3] == "Processador" and cpuAlerta[4] == "Uso CPU (%)":
                 if usoCpu < int(cpuAlerta[1]) or usoCpu > int(cpuAlerta[2]):
                     print(f"Uso da CPU Capturado {usoCpu} %")
                     print("Alerta de alto uso de CPU!!!!!")
@@ -225,20 +225,59 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                     alerta = 0
                     print(f"Uso da CPU Capturado {usoCpu} %")
                     cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
+            # Caso não tenha nehum alerta cadastrado ele sai do loop e começa a usar os alertas "Seguros"
+            break
+        
+        if usoCpu < usoCpuMinimo or usoCpu > usoCpuMaximo:
+            print(f"Uso da CPU Capturado {usoCpu} %")
+            print("Alerta de alto uso de CPU!!!!!")
+            alerta = 1
+            cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
+        else:
+            alerta = 0
+            print(f"Uso da CPU Capturado {usoCpu} %")
+            cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
                     
                     
-        # Capturando frequencia da cpu 
-        alerta = 0
-        frequencia = cp.freqCpu()
-        cd.capturandoFrequenciaCpu(frequencia, idMaquina, alerta)
+        # Capturando frequencia da cpu
+        frequencia = float(cp.freqCpu())
+        frequenciaMaxima = 3
+
+        for frequenciaCpuAlerta in alertasUsuario:
+            if frequenciaCpuAlerta[3] == "Processador" and frequenciaCpuAlerta[4] == "Frequência CPU (Ghz)":
+                if frequencia < int(frequenciaCpuAlerta[1]) or frequencia > int(frequenciaCpuAlerta[2]):
+                    print(f"Frequência da CPU Capturada {frequencia} MHz")
+                    print("Alerta de alta frequência da CPU!!!!!")
+                    alerta = 1
+                    cd.capturandoFrequenciaCpu(frequencia, idMaquina, alerta)
+                else:
+                    alerta = 0
+                    print(f"Frequência da CPU Capturada {frequencia} MHz")
+                    cd.capturandoFrequenciaCpu(frequencia, idMaquina, alerta)
+            # Caso não tenha nehum alerta cadastrado ele sai do loop e começa a usar os alertas "Seguros"
+            break
+        if frequencia > frequenciaMaxima:
+            print(f"Frequência da CPU Capturada {frequencia} MHz")
+            print("Alerta de alta frequência da CPU!!!!!")
+            alerta = 1
+            cd.capturandoFrequenciaCpu(frequencia, idMaquina, alerta)
+        else:
+            alerta = 0
+            print(f"Frequência da CPU Capturada {frequencia} MHz")
+            cd.capturandoFrequenciaCpu(frequencia, idMaquina, alerta)
         
-        
-        # Área de perda de pacotes
+    
+    
+    
+    
+    
+        # ÁREA DE CAPTURA DE PERDA DE PACOTES
         # Capturando a perda de pacotes
         pacotesPerdidos = float(cp.pacotesPerdidos())
+        pacotesPerdidosMaximo = 5
         
         for pacotesAlerta in alertasUsuario:
-            if pacotesAlerta[3] == "Placa de Rede":
+            if pacotesAlerta[3] == "Placa de Rede" and pacotesAlerta[4] == "Perda de Pacote(%)":
                 if pacotesPerdidos < int(pacotesAlerta[1]) or pacotesPerdidos > int(pacotesAlerta[2]):
                     print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
                     print("Alerta de alta perda de pacotes!!!!!")
@@ -248,6 +287,18 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                     alerta = 0
                     print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
                     cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta)
+            # Caso não tenha nehum alerta cadastrado ele sai do loop e começa a usar os alertas "Seguros"
+            break
+        if pacotesPerdidos > pacotesPerdidosMaximo:
+            print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
+            print("Alerta de alta perda de pacotes!!!!!")
+            alerta = 1
+            cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta)
+        else: 
+            alerta = 0
+            print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
+            cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta)
+            
         t.sleep(1)
     
 def verificaoLogin(email, senha):

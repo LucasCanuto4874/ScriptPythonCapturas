@@ -14,7 +14,7 @@ def UsoCpu():
 
 def freqCpu():
     frequencia = ps.cpu_freq().current
-    return frequencia
+    return f"{frequencia / 1000:.2f}"
 
 def qtdNucleos():
     return ps.cpu_count()
