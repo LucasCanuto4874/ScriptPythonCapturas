@@ -119,15 +119,20 @@ def capturaDadosComponentes(idMaquina, idUsuario):
     
     # Listando os alertas encontrados do usuario
     i = 0
-    while i < len(alertasUsuario):
-        print(dedent(f"""\
-                    Alertas encontrados da máquina {alertasUsuario[i][0]}:
-                    Mínimo do Intervalo: {alertasUsuario[i][1]},
-                    Máximo do Intervalo: {alertasUsuario[i][2]},
-                    Tipo do Componente: {alertasUsuario[i][3]},
-                    Tipo do Alerta: {alertasUsuario[i][4]}
-                """))
-        i += 1
+    
+    if (len(alertasUsuario) <= 0):
+        print("Nenhum alerta encontrado para a máquina")
+        print("Iniciando a captura de dados com alertas seguros")
+    else:
+        while i < len(alertasUsuario):
+            print(dedent(f"""\
+                        Alertas encontrados da máquina {alertasUsuario[i][0]}:
+                        Mínimo do Intervalo: {alertasUsuario[i][1]},
+                        Máximo do Intervalo: {alertasUsuario[i][2]},
+                        Tipo do Componente: {alertasUsuario[i][3]},
+                        Tipo do Alerta: {alertasUsuario[i][4]}
+                    """))
+            i += 1
             
     # # ÁREA DE CAPTURA DE ARMAZENAMENTO
     # # Capturando o armazenamento total 
@@ -148,6 +153,7 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                 print("Alerta de alto uso de armazenamento!!!!!")
                 alerta = 1
                 cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
+                
             else:
                 print(f"Armazenamento Capturado {discoUsado} GB")
                 alerta = 0
@@ -221,6 +227,7 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                     print("Alerta de alto uso de CPU!!!!!")
                     alerta = 1
                     cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
+                    print(f"Alerta disparou {usoCpu}")
                 else:
                     alerta = 0
                     print(f"Uso da CPU Capturado {usoCpu} %")
