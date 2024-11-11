@@ -122,7 +122,7 @@ def capturaDadosComponentes(idMaquina, idUsuario):
     # Listando os alertas encontrados do usuario
     i = 0
     
-    if (len(alertasUsuario) <= 0):
+    if (alertasUsuario is None ):
         print("Nenhum alerta encontrado para a máquina")
         print("Iniciando a captura de dados com alertas seguros")
     else:
@@ -148,27 +148,30 @@ def capturaDadosComponentes(idMaquina, idUsuario):
     # Capturando o armazenamento usado
     discoUsado = float(cp.discoUsado())
     discoUsadoMaximo = 500
-    for armazenamentoAlerta in alertasUsuario:
-        if armazenamentoAlerta[3] == "Armazenamento" and armazenamentoAlerta[4] == "Uso Armazenamento(GB)":
-            if discoUsado < int(armazenamentoAlerta[1]) and discoUsado > int(armazenamentoAlerta[2]):
-                print(f"Armazenamento Capturado {discoUsado} GB")
-                print("Alerta de alto uso de armazenamento!!!!!")
-                alerta = 1
-                client.chat_postMessage(channel='#social', text= f"""
-🚧 *Alerta Disparado de Bytes Enviados! (Alerta Personalizado)* 🚧
+    
+    if(alertasUsuario is None):
+        
+        for armazenamentoAlerta in alertasUsuario:
+            if armazenamentoAlerta[3] == "Armazenamento" and armazenamentoAlerta[4] == "Uso Armazenamento(GB)":
+                if discoUsado < int(armazenamentoAlerta[1]) and discoUsado > int(armazenamentoAlerta[2]):
+                    print(f"Armazenamento Capturado {discoUsado} GB")
+                    print("Alerta de alto uso de armazenamento!!!!!")
+                    alerta = 1
+                    client.chat_postMessage(channel='#social', text= f"""
+    🚧 *Alerta Disparado de Bytes Enviados! (Alerta Personalizado)* 🚧
 
-                                                         🚨 Status: Alerta Disparado!
-                                                         📊 Valor Capturado: {discoUsado} MB
-                                                         
-""")
-                cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
-                
-            else:
-                print(f"Armazenamento Capturado {discoUsado} GB")
-                alerta = 0
-                cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
-        # Caso não tenha nehum alerta cadastrado ele sai do loop e começa a usar os alertas "Seguros"
-        break
+                                                            🚨 Status: Alerta Disparado!
+                                                            📊 Valor Capturado: {discoUsado} MB
+                                                            
+    """)
+                    cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
+                    
+                else:
+                    print(f"Armazenamento Capturado {discoUsado} GB")
+                    alerta = 0
+                    cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
+            # Caso não tenha nehum alerta cadastrado ele sai do loop e começa a usar os alertas "Seguros"
+            break
     if discoUsado > discoUsadoMaximo:
         print(f"Armazenamento Capturado {discoUsado} GB")
         print("Alerta de alto uso de armazenamento!!!!!")
