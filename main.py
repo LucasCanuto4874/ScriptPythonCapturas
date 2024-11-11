@@ -1,3 +1,4 @@
+import slack
 import banco as bd
 import capturasComponente as cp
 import dadosComponente as cd
@@ -7,6 +8,7 @@ from dotenv import load_dotenv, set_key
 import os
 
 load_dotenv()
+client = slack.WebClient(token=os.environ['SLACK_TOKEN'])
 
 caminho = ".env"
 identificadorMaquina = "CODIGO_MAQUINA"
@@ -152,6 +154,13 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                 print(f"Armazenamento Capturado {discoUsado} GB")
                 print("Alerta de alto uso de armazenamento!!!!!")
                 alerta = 1
+                client.chat_postMessage(channel='#social', text= f"""
+🚧 *Alerta Disparado de Bytes Enviados! (Alerta Personalizado)* 🚧
+
+                                                         🚨 Status: Alerta Disparado!
+                                                         📊 Valor Capturado: {discoUsado} MB
+                                                         
+""")
                 cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
                 
             else:
@@ -164,6 +173,13 @@ def capturaDadosComponentes(idMaquina, idUsuario):
         print(f"Armazenamento Capturado {discoUsado} GB")
         print("Alerta de alto uso de armazenamento!!!!!")
         alerta = 1
+        client.chat_postMessage(channel='#social', text= f"""
+🚧 *Alerta Disparado de Bytes Enviados! (Alerta de Segurança)* 🚧
+
+                                                         🚨 Status: Alerta Disparado!
+                                                         📊 Valor Capturado: {discoUsado} MB
+                                                         
+""")
         cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
     else: 
         print(f"Armazenamento Capturado {discoUsado} GB")
@@ -192,6 +208,13 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                     print(f"Memória RAM Capturada {memoriaUsada} GB")
                     print("Alerta de alto uso de memória RAM!!!!!")
                     alerta = 1
+                    client.chat_postMessage(channel='#social', text= f"""
+🚧 *Alerta Disparado de RAM! (Alerta Personalizada)* 🚧
+
+                                                         🚨 Status: Alerta Disparado!
+                                                         📊 Valor Capturado: {memoriaUsada} MB
+                                                         
+""")
                     cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
                 else:
                     alerta = 0
@@ -204,6 +227,13 @@ def capturaDadosComponentes(idMaquina, idUsuario):
             print(f"Memória RAM Capturada {memoriaUsada} GB")
             print("Alerta de alto uso de memória RAM!!!!!")
             alerta = 1
+            client.chat_postMessage(channel='#social', text= f"""
+🚧 *Alerta Disparado de RAM! (Alerta de Segurança)* 🚧
+
+                                                         🚨 Status: Alerta Disparado!
+                                                         📊 Valor Capturado: {memoriaUsada} MB
+                                                         
+""")
             cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
         else:
             alerta = 0
@@ -226,6 +256,13 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                     print(f"Uso da CPU Capturado {usoCpu} %")
                     print("Alerta de alto uso de CPU!!!!!")
                     alerta = 1
+                    client.chat_postMessage(channel='#social', text= f"""
+🚧 *Alerta Disparado de CPU! (Alerta Personalizado)* 🚧
+
+                                                         🚨 Status: Alerta Disparado!
+                                                         📊 Valor Capturado: {cpuAlerta} MB
+                                                         
+""")
                     cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
                     print(f"Alerta disparou {usoCpu}")
                 else:
@@ -239,6 +276,13 @@ def capturaDadosComponentes(idMaquina, idUsuario):
             print(f"Uso da CPU Capturado {usoCpu} %")
             print("Alerta de alto uso de CPU!!!!!")
             alerta = 1
+            client.chat_postMessage(channel='#social', text= f"""
+🚧 *Alerta Disparado de CPU! (Alerta de Segurança)* 🚧
+
+                                                         🚨 Status: Alerta Disparado!
+                                                         📊 Valor Capturado: {cpuAlerta} MB
+                                                         
+""")
             cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
         else:
             alerta = 0
@@ -256,6 +300,13 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                     print(f"Frequência da CPU Capturada {frequencia} MHz")
                     print("Alerta de alta frequência da CPU!!!!!")
                     alerta = 1
+                    client.chat_postMessage(channel='#social', text= f"""
+🚧 *Alerta Disparado de alta frenquência CPU! (Alerta Personalizado)* 🚧
+
+                                                         🚨 Status: Alerta Disparado!
+                                                         📊 Valor Capturado: {frequencia} MB
+                                                         
+""")
                     cd.capturandoFrequenciaCpu(frequencia, idMaquina, alerta)
                 else:
                     alerta = 0
@@ -267,6 +318,13 @@ def capturaDadosComponentes(idMaquina, idUsuario):
             print(f"Frequência da CPU Capturada {frequencia} MHz")
             print("Alerta de alta frequência da CPU!!!!!")
             alerta = 1
+            client.chat_postMessage(channel='#social', text= f"""
+🚧 *Alerta Disparado de alta frenquência CPU! (Alerta de Segurança)* 🚧
+
+                                                         🚨 Status: Alerta Disparado!
+                                                         📊 Valor Capturado: {frequencia} MB
+                                                         
+""")
             cd.capturandoFrequenciaCpu(frequencia, idMaquina, alerta)
         else:
             alerta = 0
@@ -289,6 +347,13 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                     print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
                     print("Alerta de alta perda de pacotes!!!!!")
                     alerta = 1
+                    client.chat_postMessage(channel='#social', text= f"""
+🚧 *Alerta Disparado de alta perda de pacotes! (Alerta Personalizado)* 🚧
+
+                                                         🚨 Status: Alerta Disparado!
+                                                         📊 Valor Capturado: {pacotesPerdidos} MB
+                                                         
+""")
                     cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta)
                 else:
                     alerta = 0
@@ -300,6 +365,13 @@ def capturaDadosComponentes(idMaquina, idUsuario):
             print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
             print("Alerta de alta perda de pacotes!!!!!")
             alerta = 1
+            client.chat_postMessage(channel='#social', text= f"""
+🚧 *Alerta Disparado de alta perda de pacotes! (Alerta de Segurança)* 🚧
+
+                                                         🚨 Status: Alerta Disparado!
+                                                         📊 Valor Capturado: {pacotesPerdidos} MB
+                                                         
+""")
             cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta)
         else: 
             alerta = 0
