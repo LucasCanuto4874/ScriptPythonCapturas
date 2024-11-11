@@ -158,7 +158,7 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                     print("Alerta de alto uso de armazenamento!!!!!")
                     alerta = 1
                     client.chat_postMessage(channel='#social', text= f"""
-    🚧 *Alerta Disparado de Bytes Enviados! (Alerta Personalizado)* 🚧
+    🚧 *Alerta Disparado de alto uso de armazenamento! (Alerta Personalizado)* 🚧
 
                                                             🚨 Status: Alerta Disparado!
                                                             📊 Valor Capturado: {discoUsado} MB
@@ -177,7 +177,7 @@ def capturaDadosComponentes(idMaquina, idUsuario):
         print("Alerta de alto uso de armazenamento!!!!!")
         alerta = 1
         client.chat_postMessage(channel='#social', text= f"""
-🚧 *Alerta Disparado de Bytes Enviados! (Alerta de Segurança)* 🚧
+🚧 *Alerta Disparado de alto uso de armazenamento! (Alerta de Segurança)* 🚧
 
                                                          🚨 Status: Alerta Disparado!
                                                          📊 Valor Capturado: {discoUsado} MB
