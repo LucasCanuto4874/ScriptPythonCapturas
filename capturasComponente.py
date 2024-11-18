@@ -1,6 +1,7 @@
 import psutil as ps 
 import cpuinfo as cp
-import datetime as dt
+from datetime import datetime, timedelta 
+
 
 
 # Capturas de processador
@@ -77,11 +78,23 @@ def pacotesPerdidos():
 
     return "{:.2f}".format(perdaPorcentagem)
 
+
 # Capturando o tempo de boot 
 def bootTime():
-    boot = ps.boot_time()
-    tempoConvertido = dt.datetime.fromtimestamp(boot)
-    formatado = tempoConvertido.strftime("%Y/%m/%d %H:%M:%S")
-    return formatado
+    # Captura o tempo de boot em segundos desde de a inicialização
+    boot_time = ps.boot_time()
+
+    # Converte para um objeto datetime
+    boot_datetime = datetime.fromtimestamp(boot_time)
+
+    # Calcula o tempo de atividade
+    uptime = datetime.now() - boot_datetime
+    
+    # Exibe o tempo de atividade no formato D:HH:MM:SS
+    days, seconds = uptime.days, uptime.seconds
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    seconds = seconds % 60
+    return (f"{days}:{hours:02}:{minutes:02}:{seconds:02}")
 
 

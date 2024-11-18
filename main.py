@@ -1,4 +1,3 @@
-import slack
 import slackMensagens as sm
 import banco as bd
 import capturasComponente as cp
