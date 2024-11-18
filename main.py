@@ -122,7 +122,7 @@ def capturaDadosComponentes(idMaquina, idUsuario):
     # Listando os alertas encontrados do usuario
     i = 0
     
-    if (len(alertasUsuario) <= 0):
+    if (alertasUsuario is None ):
         print("Nenhum alerta encontrado para a máquina")
         print("Iniciando a captura de dados com alertas seguros")
     else:
