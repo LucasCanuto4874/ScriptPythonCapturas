@@ -65,7 +65,7 @@ def cadastrarMaquina(fkEmpresa, idUsuario):
     
     insertMaquina = bd.insert(f"INSERT INTO dispositivo (nome, fkEmpresa) VALUES ('{nomeMaquina}', {codigoEmpresa})")
     idUltimaMaquina = bd.select(f"SELECT id, nome FROM dispositivo ORDER BY id DESC LIMIT 1")
-    insertMaquinaAtividade = bd.insert(f"INSERT INTO historicoAtividade (fkDispositivo, fkAtividade, dataHora) VALUES ('{idUltimaMaquina[0][0]}', 1, '{cp.bootTime()}')")
+    insertMaquinaAtividade = bd.insert(f"INSERT INTO historicoAtividade (fkDispositivo, fkAtividade, dataHora) VALUES ('{idUltimaMaquina[0][0]}', 1, current_timestamp())")
     
     if insertMaquina > 0 and insertMaquinaAtividade > 0:
         print("Máquina cadastrada com sucesso!")
@@ -117,11 +117,11 @@ def capturaDadosComponentes(idMaquina, idUsuario):
     # Parte da procura dos alertas criado pelo usuário
     fkDispositivo = os.getenv('CODIGO_MAQUINA')
     alertasUsuario = bd.select(f"SELECT * FROM alertaUsuario WHERE fkUsuario = {idUsuario} AND fkDispositivo = {fkDispositivo};")
-    
+    print(f"Resultado da consulta {alertasUsuario}")
     # Listando os alertas encontrados do usuario
     i = 0
     
-    if (alertasUsuario is None ):
+    if not alertasUsuario:
         print("Nenhum alerta encontrado para a máquina")
         print("Iniciando a captura de dados com alertas seguros")
     else:
@@ -135,224 +135,173 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                     """))
             i += 1
             
-    # # ÁREA DE CAPTURA DE ARMAZENAMENTO
-    # # Capturando o armazenamento total 
-    alerta = 0
+    
     discoTotal = cp.totalDisco()
-    cd.capturaArmazenamentoTotal(discoTotal, idMaquina, alerta)
+    cd.capturaArmazenamentoTotal(discoTotal, idMaquina, 0)
     
-    
-    
-    
-    # Capturando o armazenamento usado
-    discoUsado = float(cp.discoUsado())
-    discoUsadoMaximo = 500
-    for armazenamentoAlerta in alertasUsuario:
-        if armazenamentoAlerta[3] == "Armazenamento" and armazenamentoAlerta[4] == "Uso Armazenamento(GB)":
-            if discoUsado < int(armazenamentoAlerta[1]) and discoUsado > int(armazenamentoAlerta[2]):
-                print(f"Armazenamento Capturado {discoUsado} GB")
-                print("Alerta de alto uso de armazenamento!!!!!")
-                alerta = 1
-                # Mandando mensagem para o banco e registrando o dado
-                cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
-                
-                # Disparando o alerta para o Slack
-                sm.discoUsadoPersonalizado(discoUsado)
-            else:
-                print(f"Armazenamento Capturado {discoUsado} GB")
-                alerta = 0
-                cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
-                
-        # Caso não tenha nehum alerta cadastrado ele sai do loop e começa a usar os alertas "Seguros"
-        break
-    if discoUsado > discoUsadoMaximo:
-        print(f"Armazenamento Capturado {discoUsado} GB")
-        print("Alerta de alto uso de armazenamento!!!!!")
-        alerta = 1
-        # Disparando o alerta para o banco 
-        cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
-        
-        # Disparando o alerta para o slack
-        sm.discoUsadoSistema(discoUsado)
-    else: 
-        print(f"Armazenamento Capturado {discoUsado} GB")
-        alerta = 0
-        cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
-        
-        
-        
-        
-    # ÁREA DE CAPTURA DE MEMÓRIA RAM
-    # Capturando a memória RAM total
-    alerta = 0
     memoriaRamTotal = cp.memoriaRamTotal()
-    cd.capturandoMemoriaRamTotal(memoriaRamTotal, idMaquina, alerta)
+    cd.capturandoMemoriaRamTotal(memoriaRamTotal, idMaquina, 0)
     
-    # Capturando os dados constatemente
     while True:
-        # Capturando a memória RAM usada
+        # Dados capturados
         memoriaUsada = float(cp.memoriaRamUsada())
-        ramUsadaMinima = 1
-        ramUsadaMaxima = 7
-        
-        for ramAlerta in alertasUsuario:
-            if ramAlerta[3] == "Memória" and ramAlerta[4] == "Uso Memória Ram (GB)":
-                if memoriaUsada < int(ramAlerta[1]) and memoriaUsada > int(ramAlerta[2]):
-                    print(f"Memória RAM Capturada {memoriaUsada} GB")
-                    print("Alerta de alto uso de memória RAM!!!!!")
-                    alerta = 1
-                    
-                    # Disparando o alerta para o banco
-                    cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
-                    
-                    # Disparando o alerta para o slack
-                    sm.memoriaRamUsadaPersonalizada(memoriaUsada)
-                else:
-                    alerta = 0
-                    print(f"Memória RAM Capturada {memoriaUsada} GB")
-                    cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
-            # Caso não tenha nehum alerta cadastrado ele sai do loop e começa a usar os alertas "Seguros"
-            break
-        
-        if memoriaUsada < ramUsadaMinima and memoriaUsada > ramUsadaMaxima:
-            print(f"Memória RAM Capturada {memoriaUsada} GB")
-            print("Alerta de alto uso de memória RAM!!!!!")
-            alerta = 1
-
-            # Disparando o alerta para o banco de dados
-            cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
-            # Disparando o alerta para o slack 
-            sm.memoriaRamUsadaSistema(memoriaUsada)
-        else:
-            alerta = 0
-            print(f"Memória RAM Capturada {memoriaUsada} GB")
-            cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
-        
-                    
-                    
-                    
-                    
-        # ÁREA DE CAPTURA DE CPU
-        # Capturando o uso da CPU
+        discoUsado = float(cp.discoUsado())
         usoCpu = float(cp.UsoCpu())
-        usoCpuMinimo = 10
-        usoCpuMaximo = 90
-        
-        for cpuAlerta in alertasUsuario:
-            if cpuAlerta[3] == "Processador" and cpuAlerta[4] == "Uso CPU (%)":
-                if usoCpu < int(cpuAlerta[1]) and usoCpu > int(cpuAlerta[2]):
-                    print(f"Uso da CPU Capturado {usoCpu} %")
-                    print("Alerta de alto uso de CPU!!!!!")
-                    alerta = 1
-
-                    # Disparando o alerta para o banco de dados
-                    cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
-                    
-                    # Disparando o alerta para o slack 
-                    sm.usoDeCpuPersonalizado(usoCpu)
-                    
-                    print(f"Alerta disparou {usoCpu}")
-                else:
-                    alerta = 0
-                    print(f"Uso da CPU Capturado {usoCpu} %")
-                    cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
-            # Caso não tenha nehum alerta cadastrado ele sai do loop e começa a usar os alertas "Seguros"
-            break
-        
-        if usoCpu < usoCpuMinimo and usoCpu > usoCpuMaximo:
-            print(f"Uso da CPU Capturado {usoCpu} %")
-            print("Alerta de alto uso de CPU!!!!!")
-            alerta = 1
-           
-            # Disparando o aletta para o banco de dados
-            cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
-            
-            # Disparando o alerta para o slack 
-            sm.usoDeCpuSistema(usoCpu)
-            
-        else:
-            alerta = 0
-            print(f"Uso da CPU Capturado {usoCpu} %")
-            cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
-                    
-                    
-        # Capturando frequencia da cpu
         frequencia = float(cp.freqCpu())
-        frequenciaMaxima = 3
-
-        for frequenciaCpuAlerta in alertasUsuario:
-            if frequenciaCpuAlerta[3] == "Processador" and frequenciaCpuAlerta[4] == "Frequência CPU (Ghz)":
-                if frequencia < int(frequenciaCpuAlerta[1]) and frequencia > int(frequenciaCpuAlerta[2]):
-                    print(f"Frequência da CPU Capturada {frequencia} MHz")
-                    print("Alerta de alta frequência da CPU!!!!!")
-                    alerta = 1
-                    # Disparando o alerta para o banco de dados
-                    cd.capturandoFrequenciaCpu(frequencia, idMaquina, alerta)
-                    
-                    # Disparando o alerta para o slack
-                    sm.frequenciaCpuPersonalizado(frequencia)
-
-                else:
-                    alerta = 0
-                    print(f"Frequência da CPU Capturada {frequencia} MHz")
-                    cd.capturandoFrequenciaCpu(frequencia, idMaquina, alerta)
-            # Caso não tenha nehum alerta cadastrado ele sai do loop e começa a usar os alertas "Seguros"
-            break
-        if frequencia > frequenciaMaxima:
-            print(f"Frequência da CPU Capturada {frequencia} MHz")
-            print("Alerta de alta frequência da CPU!!!!!")
-            alerta = 1
-            # Disparando o alerta para o banco de dados
-            cd.capturandoFrequenciaCpu(frequencia, idMaquina, alerta)
-            
-            # Disparando o alerta para o slack
-            sm.frequenciaCpuSistema(frequencia)
-        else:
-            alerta = 0
-            print(f"Frequência da CPU Capturada {frequencia} MHz")
-            cd.capturandoFrequenciaCpu(frequencia, idMaquina, alerta)
-        
-    
-    
-    
-    
-    
-        # ÁREA DE CAPTURA DE PERDA DE PACOTES
-        # Capturando a perda de pacotes
         pacotesPerdidos = float(cp.pacotesPerdidos())
-        pacotesPerdidosMaximo = 5
-        
-        for pacotesAlerta in alertasUsuario:
-            if pacotesAlerta[3] == "Placa de Rede" and pacotesAlerta[4] == "Perda de Pacote(%)":
-                if pacotesPerdidos < int(pacotesAlerta[1]) and pacotesPerdidos > int(pacotesAlerta[2]):
-                    print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
-                    print("Alerta de alta perda de pacotes!!!!!")
-                    alerta = 1
-                    # Disparando o alerta para o banco de dados
-                    cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta)
-                    
-                    # Disparando o alerta para o slack 
-                    sm.perdaDePacotesPersonalizado(pacotesPerdidos)
-                else:
-                    alerta = 0
-                    print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
-                    cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta)
-            # Caso não tenha nehum alerta cadastrado ele sai do loop e começa a usar os alertas "Seguros"
-            break
-        if pacotesPerdidos > pacotesPerdidosMaximo:
-            print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
-            print("Alerta de alta perda de pacotes!!!!!")
-            alerta = 1
-            # Disparando o alerta para o banco de dados
-            cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta)
-            # Disparando o alerta para o slack 
-            sm.perdaDePacotesSistema(pacotesPerdidos)
-        else: 
-            alerta = 0
-            print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
-            cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta)
-            
-        t.sleep(1)
+
+        # Iteração sobre os componentes para capturar os alertas
+        componentes = ["Armazenamento", "Memória", "Processador", "Placa de Rede"]
+        for componente in componentes:
+            alertaEncontrado = False  # Flag para verificar se encontrou um alerta para o componente
+
+            if alertasUsuario:
+                for alertaUsuario in alertasUsuario:
+                    metrica = alertaUsuario[4]
+                    limiteInferior = float(alertaUsuario[1])
+                    limiteSuperior = float(alertaUsuario[2])
+
+                    # Verifica o alerta baseado no componente e métrica
+                    if componente == alertaUsuario[3] and metrica:
+                        alertaEncontrado = True
+                        
+                        # ARMZENAMENTO
+                        if componente == "Armazenamento" and metrica == "Uso Armazenamento(GB)":
+                            if discoUsado <= limiteInferior or discoUsado >= limiteSuperior:
+                                print("Alerta de alto uso de armazenamento!!!!!")
+                                print(f"Armazenamento Capturado {discoUsado} GB")
+                                cd.capturaArmazenamentoUsado(discoUsado, idMaquina, 1)
+                                sm.discoUsadoPersonalizado(discoUsado)
+                            else:
+                                print(f"Armazenamento Capturado {discoUsado} GB")
+                                cd.capturaArmazenamentoUsado(discoUsado, idMaquina, 0)
+
+    
+                        # MEMÓRIA RAM USADA
+                        elif componente == "Memória" and metrica == "Uso Memória Ram (GB)":
+                            if memoriaUsada <= limiteInferior or memoriaUsada >= limiteSuperior:
+                                print("Alerta de alto uso de memória RAM!!!!!")
+                                print(f"Memória RAM Capturada {memoriaUsada} GB")
+                                cd.inserirMemoriaUsada(memoriaUsada, idMaquina, 1)
+                                sm.memoriaRamUsadaPersonalizada(memoriaUsada)
+                            else:
+                                print(f"Memória RAM Capturada {memoriaUsada} GB")
+                                cd.inserirMemoriaUsada(memoriaUsada, idMaquina, 0)
+
+
+
+                        # PROCESSADOR (USO DE CPU)
+                        elif componente == "Processador" and metrica == "Uso CPU (%)":
+                            if usoCpu <= limiteInferior or usoCpu >= limiteSuperior:
+                                print("Alerta de alto uso de CPU!!!!!")
+                                print(f"Uso da CPU Capturado {usoCpu} %")
+                                cd.capturandoUsoCpu(usoCpu, idMaquina, 1)
+                                sm.usoDeCpuPersonalizado(usoCpu)
+                            else:
+                                print(f"Uso da CPU Capturado {usoCpu} %")
+                                cd.capturandoUsoCpu(usoCpu, idMaquina, 0)
+
+
+                        # PROCESSADOR (FREQUÊNCIA)
+                        elif componente == "Processador" and metrica == "Frequência CPU (Ghz)":
+                            if frequencia <= limiteInferior or frequencia >= limiteSuperior:
+                                print("Alerta de alta frequência da CPU!!!!!")
+                                print(f"Frequência da CPU Capturada {frequencia} MHz")
+                                cd.capturandoFrequenciaCpu(frequencia, idMaquina, 1)
+                                sm.frequenciaCpuPersonalizado(frequencia)
+                            else:
+                                print(f"Frequência da CPU Capturada {frequencia} MHz")
+                                cd.capturandoFrequenciaCpu(frequencia, idMaquina, 0)
+
+
+                        # PLACA DE REDE
+                        elif componente == "Placa de Rede" and metrica == "Perda de Pacote(%)":
+                            if pacotesPerdidos <= limiteInferior or pacotesPerdidos >= limiteSuperior:
+                                print("Alerta de alta perda de pacotes!!!!!")
+                                print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
+                                cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, 1)
+                                sm.perdaDePacotesPersonalizado(pacotesPerdidos)
+                            else:
+                                print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
+                                cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, 0)
+
+                        break  # Encerra o loop de alertas assim que um alerta for encontrado
+
+            # Caso não tenha encontrado nenhum alerta específico para o componente, executa o alerta de segurança do sistema
+            if not alertaEncontrado:
+                print(f"Capturas sem alertas cadastrados para {componente}. Usando alertas de segurança.")
+                
+                # ALERTAS DE SEGURANÇA DO SISTEMA
+                
+                ramUsadaMinima = 1
+                ramUsadaMaxima = 2
+                
+                discoUsadoMaximo = 1
+                
+                usoCpuMinimo = 0
+                usoCpuMaximo = 0.5
+                
+                frequenciaMaxima = 1
+                
+                pacotesPerdidosMaximo = 1
+                
+                # ARMAZENAMENTO (ALERTA NÃO CADASTRADO PELO USUÁRIO)
+                if componente == "Armazenamento":
+                    if discoUsado >= discoUsadoMaximo:
+                        print("Alerta de alto uso de Armazenamento!!!!!")
+                        print(f"Armazenamento capturada {discoUsado}")
+                        cd.capturaArmazenamentoUsado(discoUsado, idMaquina, 1)
+                        sm.discoUsadoSistema(discoUsado)
+                    else: 
+                        print(f"Armazenamento capturada {discoUsado}")
+                        cd.capturaArmazenamentoUsado(discoUsado, idMaquina, 0)
+
+                # MEMÓRIA (ALERTA NÃO CADASTRADO PELO USUÁRIO)
+                elif componente == "Memória":
+                    if memoriaUsada <= ramUsadaMinima or memoriaUsada >= ramUsadaMaxima:
+                        print("Alerta de alto uso de Memória Ram!!!!!")
+                        print(f"Memória Ram capturada {memoriaUsada}")
+                        cd.inserirMemoriaUsada(memoriaUsada, idMaquina, 1)
+                        sm.memoriaRamUsadaSistema(memoriaUsada)
+                    else:
+                        print(f"Memória Ram capturada {memoriaUsada}")
+                        cd.inserirMemoriaUsada(memoriaUsada, idMaquina, 0)
+
+
+                # PROCESSADOR (ALERTA NÃO CADASTRADO PELO USUÁRIO)
+                elif componente == "Processador":
+                    if usoCpu <= usoCpuMinimo or usoCpu >= usoCpuMaximo:
+                        print("Alerta de alto uso de CPU!!!!!")
+                        print(f"Uso de CPU capturado {usoCpu}")
+                        cd.capturandoUsoCpu(usoCpu, idMaquina, 1)
+                        sm.usoDeCpuSistema(usoCpu)
+                    else:
+                        print(f"Uso de CPU capturado {usoCpu}")
+                        cd.capturandoUsoCpu(usoCpu, idMaquina, 0)
+
+                    if frequencia >= frequenciaMaxima:
+                        print("Alerta de alto uso de frequência da CPU!!!!!")
+                        print(f"Frequência da CPU capturada {frequencia}")
+                        cd.capturandoFrequenciaCpu(frequencia, idMaquina, 1)
+                        sm.frequenciaCpuSistema(frequencia)
+                    else:
+                        print(f"Frequência da CPU capturada {frequencia}")
+                        cd.capturandoFrequenciaCpu(frequencia, idMaquina, 0)
+
+                # PLACA DE REDE (ALERTA NÃO CADASTRADO PELO USUÁRIO)
+                elif componente == "Placa de Rede":
+                    if pacotesPerdidos >= pacotesPerdidosMaximo:
+                        print("Alerta de alta perda de pacote!!!!!")
+                        print(f"Perda de pacotes capturado {pacotesPerdidos}")
+                        cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, 1)
+                        sm.perdaDePacotesSistema(pacotesPerdidos)
+                    else:
+                        print(f"Perda de pacotes capturado {pacotesPerdidos}")
+                        cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, 0)
+
+        # Atraso entre iterações
+        t.sleep(2)
+
     
 def verificaoLogin(email, senha):
     listaVerificacao = [email, senha]  
