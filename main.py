@@ -1,4 +1,5 @@
 import slack
+import slackMensagens as sm
 import banco as bd
 import capturasComponente as cp
 import dadosComponente as cd
@@ -8,7 +9,6 @@ from dotenv import load_dotenv, set_key
 import os
 
 load_dotenv()
-client = slack.WebClient(token=os.environ['SLACK_TOKEN'])
 
 caminho = ".env"
 identificadorMaquina = "CODIGO_MAQUINA"
@@ -154,33 +154,27 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                 print(f"Armazenamento Capturado {discoUsado} GB")
                 print("Alerta de alto uso de armazenamento!!!!!")
                 alerta = 1
-                client.chat_postMessage(channel='#social', text= f"""
-🚧 *Alerta Disparado de Bytes Enviados! (Alerta Personalizado)* 🚧
-
-                                                         🚨 Status: Alerta Disparado!
-                                                         📊 Valor Capturado: {discoUsado} MB
-                                                         
-""")
+                # Mandando mensagem para o banco e registrando o dado
                 cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
                 
+                # Disparando o alerta para o Slack
+                sm.discoUsadoPersonalizado(discoUsado)
             else:
                 print(f"Armazenamento Capturado {discoUsado} GB")
                 alerta = 0
                 cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
+                
         # Caso não tenha nehum alerta cadastrado ele sai do loop e começa a usar os alertas "Seguros"
         break
     if discoUsado > discoUsadoMaximo:
         print(f"Armazenamento Capturado {discoUsado} GB")
         print("Alerta de alto uso de armazenamento!!!!!")
         alerta = 1
-        client.chat_postMessage(channel='#social', text= f"""
-🚧 *Alerta Disparado de Bytes Enviados! (Alerta de Segurança)* 🚧
-
-                                                         🚨 Status: Alerta Disparado!
-                                                         📊 Valor Capturado: {discoUsado} MB
-                                                         
-""")
+        # Disparando o alerta para o banco 
         cd.capturaArmazenamentoUsado(discoUsado, idMaquina, alerta)
+        
+        # Disparando o alerta para o slack
+        sm.discoUsadoSistema(discoUsado)
     else: 
         print(f"Armazenamento Capturado {discoUsado} GB")
         alerta = 0
@@ -208,14 +202,12 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                     print(f"Memória RAM Capturada {memoriaUsada} GB")
                     print("Alerta de alto uso de memória RAM!!!!!")
                     alerta = 1
-                    client.chat_postMessage(channel='#social', text= f"""
-🚧 *Alerta Disparado de RAM! (Alerta Personalizada)* 🚧
-
-                                                         🚨 Status: Alerta Disparado!
-                                                         📊 Valor Capturado: {memoriaUsada} MB
-                                                         
-""")
+                    
+                    # Disparando o alerta para o banco
                     cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
+                    
+                    # Disparando o alerta para o slack
+                    sm.memoriaRamUsadaPersonalizada(memoriaUsada)
                 else:
                     alerta = 0
                     print(f"Memória RAM Capturada {memoriaUsada} GB")
@@ -227,14 +219,11 @@ def capturaDadosComponentes(idMaquina, idUsuario):
             print(f"Memória RAM Capturada {memoriaUsada} GB")
             print("Alerta de alto uso de memória RAM!!!!!")
             alerta = 1
-            client.chat_postMessage(channel='#social', text= f"""
-🚧 *Alerta Disparado de RAM! (Alerta de Segurança)* 🚧
 
-                                                         🚨 Status: Alerta Disparado!
-                                                         📊 Valor Capturado: {memoriaUsada} MB
-                                                         
-""")
+            # Disparando o alerta para o banco de dados
             cd.inserirMemoriaUsada(memoriaUsada, idMaquina, alerta)
+            # Disparando o alerta para o slack 
+            sm.memoriaRamUsadaSistema(memoriaUsada)
         else:
             alerta = 0
             print(f"Memória RAM Capturada {memoriaUsada} GB")
@@ -256,14 +245,13 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                     print(f"Uso da CPU Capturado {usoCpu} %")
                     print("Alerta de alto uso de CPU!!!!!")
                     alerta = 1
-                    client.chat_postMessage(channel='#social', text= f"""
-🚧 *Alerta Disparado de CPU! (Alerta Personalizado)* 🚧
 
-                                                         🚨 Status: Alerta Disparado!
-                                                         📊 Valor Capturado: {cpuAlerta} MB
-                                                         
-""")
+                    # Disparando o alerta para o banco de dados
                     cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
+                    
+                    # Disparando o alerta para o slack 
+                    sm.usoDeCpuPersonalizado(usoCpu)
+                    
                     print(f"Alerta disparou {usoCpu}")
                 else:
                     alerta = 0
@@ -276,14 +264,13 @@ def capturaDadosComponentes(idMaquina, idUsuario):
             print(f"Uso da CPU Capturado {usoCpu} %")
             print("Alerta de alto uso de CPU!!!!!")
             alerta = 1
-            client.chat_postMessage(channel='#social', text= f"""
-🚧 *Alerta Disparado de CPU! (Alerta de Segurança)* 🚧
-
-                                                         🚨 Status: Alerta Disparado!
-                                                         📊 Valor Capturado: {cpuAlerta} MB
-                                                         
-""")
+           
+            # Disparando o aletta para o banco de dados
             cd.capturandoUsoCpu(usoCpu, idMaquina, alerta)
+            
+            # Disparando o alerta para o slack 
+            sm.usoDeCpuSistema(usoCpu)
+            
         else:
             alerta = 0
             print(f"Uso da CPU Capturado {usoCpu} %")
@@ -300,14 +287,12 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                     print(f"Frequência da CPU Capturada {frequencia} MHz")
                     print("Alerta de alta frequência da CPU!!!!!")
                     alerta = 1
-                    client.chat_postMessage(channel='#social', text= f"""
-🚧 *Alerta Disparado de alta frenquência CPU! (Alerta Personalizado)* 🚧
-
-                                                         🚨 Status: Alerta Disparado!
-                                                         📊 Valor Capturado: {frequencia} MB
-                                                         
-""")
+                    # Disparando o alerta para o banco de dados
                     cd.capturandoFrequenciaCpu(frequencia, idMaquina, alerta)
+                    
+                    # Disparando o alerta para o slack
+                    sm.frequenciaCpuPersonalizado(frequencia)
+
                 else:
                     alerta = 0
                     print(f"Frequência da CPU Capturada {frequencia} MHz")
@@ -318,14 +303,11 @@ def capturaDadosComponentes(idMaquina, idUsuario):
             print(f"Frequência da CPU Capturada {frequencia} MHz")
             print("Alerta de alta frequência da CPU!!!!!")
             alerta = 1
-            client.chat_postMessage(channel='#social', text= f"""
-🚧 *Alerta Disparado de alta frenquência CPU! (Alerta de Segurança)* 🚧
-
-                                                         🚨 Status: Alerta Disparado!
-                                                         📊 Valor Capturado: {frequencia} MB
-                                                         
-""")
+            # Disparando o alerta para o banco de dados
             cd.capturandoFrequenciaCpu(frequencia, idMaquina, alerta)
+            
+            # Disparando o alerta para o slack
+            sm.frequenciaCpuSistema(frequencia)
         else:
             alerta = 0
             print(f"Frequência da CPU Capturada {frequencia} MHz")
@@ -347,14 +329,11 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                     print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
                     print("Alerta de alta perda de pacotes!!!!!")
                     alerta = 1
-                    client.chat_postMessage(channel='#social', text= f"""
-🚧 *Alerta Disparado de alta perda de pacotes! (Alerta Personalizado)* 🚧
-
-                                                         🚨 Status: Alerta Disparado!
-                                                         📊 Valor Capturado: {pacotesPerdidos} MB
-                                                         
-""")
+                    # Disparando o alerta para o banco de dados
                     cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta)
+                    
+                    # Disparando o alerta para o slack 
+                    sm.perdaDePacotesPersonalizado(pacotesPerdidos)
                 else:
                     alerta = 0
                     print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
@@ -365,14 +344,10 @@ def capturaDadosComponentes(idMaquina, idUsuario):
             print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
             print("Alerta de alta perda de pacotes!!!!!")
             alerta = 1
-            client.chat_postMessage(channel='#social', text= f"""
-🚧 *Alerta Disparado de alta perda de pacotes! (Alerta de Segurança)* 🚧
-
-                                                         🚨 Status: Alerta Disparado!
-                                                         📊 Valor Capturado: {pacotesPerdidos} MB
-                                                         
-""")
+            # Disparando o alerta para o banco de dados
             cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta)
+            # Disparando o alerta para o slack 
+            sm.perdaDePacotesSistema(pacotesPerdidos)
         else: 
             alerta = 0
             print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
