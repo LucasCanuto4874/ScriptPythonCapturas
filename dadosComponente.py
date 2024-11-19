@@ -54,6 +54,4 @@ def capturaPerdaDePacotes(pacotesPerdidos, idMaquina, alerta):
     else:
         bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, eAlerta, fkComponente, fkDispositivo)  VALUES ('{pacotesPerdidos}', 'MB', current_timestamp(), 'Alerta: Alta Perda de Pacotes', {alerta}, {idUltimaPlacaRede[0][0]}, {idMaquina});")
         
-def tempoAtividadeMaquina(tempoAtividade, idMaquina, alerta):
-    print("quiteria")
     

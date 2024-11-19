@@ -67,6 +67,9 @@ def cadastrarMaquina(fkEmpresa, idUsuario):
     idUltimaMaquina = bd.select(f"SELECT id, nome FROM dispositivo ORDER BY id DESC LIMIT 1")
     insertMaquinaAtividade = bd.insert(f"INSERT INTO historicoAtividade (fkDispositivo, fkAtividade, dataHora) VALUES ('{idUltimaMaquina[0][0]}', 1, current_timestamp())")
     
+    # Inserindo o bootTime da ultima máquina da empresa
+    bd.insert(f"INSERT INTO tempoAtividade (fkDispositivo, bootTime) VALUES ({idUltimaMaquina[0][0]}, '{cp.bootTime()}')")
+    
     if insertMaquina > 0 and insertMaquinaAtividade > 0:
         print("Máquina cadastrada com sucesso!")
         print("Começando processo de cadastrar os componentes da máquina...")

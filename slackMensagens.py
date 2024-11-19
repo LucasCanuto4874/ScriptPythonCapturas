@@ -5,8 +5,6 @@ import os
 # Conexão com o Slack
 client = slack.WebClient(token=os.environ['SLACK_TOKEN'])
 
-
-# Mensagem de disco personalizado
 def discoUsadoPersonalizado(discoUsado):
        client.chat_postMessage(channel='#alertas-dashboard-novascan', text= f"""
 🚧 *Alerta Disparado de Bytes Enviados! (Alerta Personalizado)* 🚧

@@ -82,7 +82,10 @@ def pacotesPerdidos():
 # Capturando o tempo de boot 
 def bootTime():
     boot_time = ps.boot_time()
-    return boot_time
+    
+    boot_datetime = datetime.fromtimestamp(boot_time)
+    
+    return(boot_datetime.strftime("%Y/%m/%d %H:%M:%S"))
     
 
 
