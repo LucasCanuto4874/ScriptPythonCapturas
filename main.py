@@ -145,6 +145,11 @@ def capturaDadosComponentes(idMaquina, idUsuario):
     memoriaRamTotal = cp.memoriaRamTotal()
     cd.capturandoMemoriaRamTotal(memoriaRamTotal, idMaquina, 0)
     
+    nucleoCPU = cp.qtdNucleos()
+    print(f"Capturando Núcelo CPU {nucleoCPU}" )
+    cd.caputrandoNuceloCPU(nucleoCPU, idMaquina, 0)
+    
+    
     while True:
         # Dados capturados
         memoriaUsada = float(cp.memoriaRamUsada())
