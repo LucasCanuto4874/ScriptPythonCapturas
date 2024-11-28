@@ -31,6 +31,9 @@ def capturandoMemoriaRamTotal(memoriaRamTotal, idMaquina, alerta):
     idUltimaMemoria = bd.select(f"SELECT id FROM ultimoComponente WHERE tipo = 'Memória' AND fkDispositivo = {idMaquina}")
     bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, eAlerta, fkComponente, fkDispositivo) VALUES ('{memoriaRamTotal}', 'GB', current_timestamp(), 'Memória RAM Total', {alerta}, {idUltimaMemoria[0][0]}, {idMaquina});")
 
+def capturandoMemoriaRamPorcentagem(memoriaRamTotal, idMaquina, alerta):
+    idUltimaMemoria = bd.select(f"SELECT id FROM ultimoComponente WHERE tipo = 'Memória' AND fkDispositivo = {idMaquina}")
+    bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, eAlerta, fkComponente, fkDispositivo) VALUES ('{memoriaRamTotal}', '%', current_timestamp(), 'Porcentagem Memória Ram', {alerta}, {idUltimaMemoria[0][0]}, {idMaquina});")
         
 # Capturando dados de disco usado e livre 
 def capturaArmazenamentoUsado(discoUsado, idMaquina, alerta):

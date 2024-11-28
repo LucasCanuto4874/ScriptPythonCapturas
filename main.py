@@ -148,10 +148,14 @@ def capturaDadosComponentes(idMaquina, idUsuario):
     while True:
         # Dados capturados
         memoriaUsada = float(cp.memoriaRamUsada())
+        porcentagemMemoriaRam = (cp.memoriaRamPorcentagem())
         discoUsado = float(cp.discoUsado())
         usoCpu = float(cp.UsoCpu())
         frequencia = float(cp.freqCpu())
         pacotesPerdidos = float(cp.pacotesPerdidos())
+        
+        print(f"Porcentagem Memória Ram Capturado {porcentagemMemoriaRam}")
+        cd.capturandoMemoriaRamPorcentagem(porcentagemMemoriaRam, idMaquina, 0)
 
         # Iteração sobre os componentes para capturar os alertas
         componentes = ["Armazenamento", "Memória", "Processador", "Placa de Rede"]
@@ -174,7 +178,7 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                                 print("Alerta de alto uso de armazenamento!!!!!")
                                 print(f"Armazenamento Capturado {discoUsado} GB")
                                 cd.capturaArmazenamentoUsado(discoUsado, idMaquina, 1)
-                                sm.discoUsadoPersonalizado(discoUsado)
+                                # sm.discoUsadoPersonalizado(discoUsado)
                             else:
                                 print(f"Armazenamento Capturado {discoUsado} GB")
                                 cd.capturaArmazenamentoUsado(discoUsado, idMaquina, 0)
@@ -186,7 +190,7 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                                 print("Alerta de alto uso de memória RAM!!!!!")
                                 print(f"Memória RAM Capturada {memoriaUsada} GB")
                                 cd.inserirMemoriaUsada(memoriaUsada, idMaquina, 1)
-                                sm.memoriaRamUsadaPersonalizada(memoriaUsada)
+                                # sm.memoriaRamUsadaPersonalizada(memoriaUsada)
                             else:
                                 print(f"Memória RAM Capturada {memoriaUsada} GB")
                                 cd.inserirMemoriaUsada(memoriaUsada, idMaquina, 0)
@@ -199,7 +203,7 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                                 print("Alerta de alto uso de CPU!!!!!")
                                 print(f"Uso da CPU Capturado {usoCpu} %")
                                 cd.capturandoUsoCpu(usoCpu, idMaquina, 1)
-                                sm.usoDeCpuPersonalizado(usoCpu)
+                                # sm.usoDeCpuPersonalizado(usoCpu)
                             else:
                                 print(f"Uso da CPU Capturado {usoCpu} %")
                                 cd.capturandoUsoCpu(usoCpu, idMaquina, 0)
@@ -211,7 +215,7 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                                 print("Alerta de alta frequência da CPU!!!!!")
                                 print(f"Frequência da CPU Capturada {frequencia} MHz")
                                 cd.capturandoFrequenciaCpu(frequencia, idMaquina, 1)
-                                sm.frequenciaCpuPersonalizado(frequencia)
+                                # sm.frequenciaCpuPersonalizado(frequencia)
                             else:
                                 print(f"Frequência da CPU Capturada {frequencia} MHz")
                                 cd.capturandoFrequenciaCpu(frequencia, idMaquina, 0)
@@ -223,7 +227,7 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                                 print("Alerta de alta perda de pacotes!!!!!")
                                 print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
                                 cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, 1)
-                                sm.perdaDePacotesPersonalizado(pacotesPerdidos)
+                                # sm.perdaDePacotesPersonalizado(pacotesPerdidos)
                             else:
                                 print(f"Perda de Pacotes Capturada {pacotesPerdidos} MB")
                                 cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, 0)
@@ -237,14 +241,14 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                 # ALERTAS DE SEGURANÇA DO SISTEMA
                 
                 ramUsadaMinima = 1
-                ramUsadaMaxima = 2
+                ramUsadaMaxima = 8
                 
-                discoUsadoMaximo = 1
+                discoUsadoMaximo = 700
                 
-                usoCpuMinimo = 0
-                usoCpuMaximo = 0.5
+                usoCpuMinimo = 20.0
+                usoCpuMaximo = 80.0
                 
-                frequenciaMaxima = 1
+                frequenciaMaxima = 2
                 
                 pacotesPerdidosMaximo = 1
                 
@@ -254,7 +258,7 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                         print("Alerta de alto uso de Armazenamento!!!!!")
                         print(f"Armazenamento capturada {discoUsado}")
                         cd.capturaArmazenamentoUsado(discoUsado, idMaquina, 1)
-                        sm.discoUsadoSistema(discoUsado)
+                        # sm.discoUsadoSistema(discoUsado)
                     else: 
                         print(f"Armazenamento capturada {discoUsado}")
                         cd.capturaArmazenamentoUsado(discoUsado, idMaquina, 0)
@@ -265,7 +269,7 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                         print("Alerta de alto uso de Memória Ram!!!!!")
                         print(f"Memória Ram capturada {memoriaUsada}")
                         cd.inserirMemoriaUsada(memoriaUsada, idMaquina, 1)
-                        sm.memoriaRamUsadaSistema(memoriaUsada)
+                        # sm.memoriaRamUsadaSistema(memoriaUsada)
                     else:
                         print(f"Memória Ram capturada {memoriaUsada}")
                         cd.inserirMemoriaUsada(memoriaUsada, idMaquina, 0)
@@ -277,7 +281,7 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                         print("Alerta de alto uso de CPU!!!!!")
                         print(f"Uso de CPU capturado {usoCpu}")
                         cd.capturandoUsoCpu(usoCpu, idMaquina, 1)
-                        sm.usoDeCpuSistema(usoCpu)
+                        # sm.usoDeCpuSistema(usoCpu)
                     else:
                         print(f"Uso de CPU capturado {usoCpu}")
                         cd.capturandoUsoCpu(usoCpu, idMaquina, 0)
@@ -286,7 +290,7 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                         print("Alerta de alto uso de frequência da CPU!!!!!")
                         print(f"Frequência da CPU capturada {frequencia}")
                         cd.capturandoFrequenciaCpu(frequencia, idMaquina, 1)
-                        sm.frequenciaCpuSistema(frequencia)
+                        # sm.frequenciaCpuSistema(frequencia)
                     else:
                         print(f"Frequência da CPU capturada {frequencia}")
                         cd.capturandoFrequenciaCpu(frequencia, idMaquina, 0)
@@ -297,7 +301,7 @@ def capturaDadosComponentes(idMaquina, idUsuario):
                         print("Alerta de alta perda de pacote!!!!!")
                         print(f"Perda de pacotes capturado {pacotesPerdidos}")
                         cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, 1)
-                        sm.perdaDePacotesSistema(pacotesPerdidos)
+                        # sm.perdaDePacotesSistema(pacotesPerdidos)
                     else:
                         print(f"Perda de pacotes capturado {pacotesPerdidos}")
                         cd.capturaPerdaDePacotes(pacotesPerdidos, idMaquina, 0)

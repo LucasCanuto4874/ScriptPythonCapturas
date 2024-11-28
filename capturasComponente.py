@@ -36,6 +36,11 @@ def memoriaRamLivre():
     
     return f"{total / (1024 ** 3):.2}" 
 
+def memoriaRamPorcentagem():
+    porcentagem = ps.virtual_memory().percent
+    
+    return porcentagem
+
 # Capturando dados de armazenamento 
 def totalDisco():
     total = ps.disk_usage("/").total 
