@@ -14,9 +14,9 @@ def capturandoFrequenciaCpu(frequencia, idMaquina, alerta):
     idUltimaCpu = bd.select(f"SELECT id FROM ultimoComponente WHERE tipo = 'Processador' AND fkDispositivo = {idMaquina}")
     
     if(alerta == 0):
-        bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, eAlerta, fkComponente, fkDispositivo) VALUES ('{frequencia}', 'Ghz', current_timestamp(), 'Frequencia do processador', {alerta}, {idUltimaCpu[0][0]}, {idMaquina});")
+        bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, eAlerta, fkComponente, fkDispositivo) VALUES ('{frequencia}', 'Ghz', current_timestamp(), 'Frequência do processador', {alerta}, {idUltimaCpu[0][0]}, {idMaquina});")
     else: 
-        bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, eAlerta, fkComponente, fkDispositivo) VALUES ('{frequencia}', 'Ghz', current_timestamp(), 'Alerta: Alta Frequencia do processador', {alerta}, {idUltimaCpu[0][0]}, {idMaquina});")
+        bd.insert(f"INSERT INTO log (valor, unidadeDeMedida, dataHora, descricao, eAlerta, fkComponente, fkDispositivo) VALUES ('{frequencia}', 'Ghz', current_timestamp(), 'Alerta: Alta Frequência do processador', {alerta}, {idUltimaCpu[0][0]}, {idMaquina});")
 
 def caputrandoNuceloCPU(nucleoCPU, idMaquina, alerta):
     idUltimaCpu = bd.select(f"SELECT id FROM ultimoComponente WHERE tipo = 'Processador' AND fkDispositivo = {idMaquina}")
